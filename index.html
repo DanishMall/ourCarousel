@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Image Gallery</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./css/thumbnail.css">
+    <link rel="stylesheet" href="./css/comments.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>Forever in Bloom</h1>
+    </header>
+
+    <div class="carousel-container">
+        <div class="carousel">
+            <div class="wrap">
+                <img src="./images/riya1.png" alt="Premium photo 1" />
+                <img src="./images/us3.png" alt="Premium photo 2" />
+                <img src="./images/us7.png" alt="Premium photo 3" />
+                <img src="./images/us8.png" alt="Premium photo 4" />
+                <img src="./images/us8.png" alt="Premium photo 5" />
+                <img src="./images/us3.png" alt="Premium photo 6" />
+                <img src="./images/us7.png" alt="Premium photo 7" />
+                <img src="./images/us8.png" alt="Premium photo 8" />
+            </div>
+            <!-- <div class="navigation-arrows">
+                <div class="arrow prev"></div>
+                <div class="arrow next"></div>
+            </div> -->
+            <!-- <div class="controls">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div> -->
+        </div>
+    </div>
+
+    <div class="description">
+        <h2>Where Love Grows</h2>
+        <p>Love is a garden nurtured by trust, kindness, and shared dreams. It grows stronger with every moment of laughter, every challenge overcome, and every memory created together. In its embrace, we find not only another, but also the best versions of ourselves.</p>
+    </div>
+
+    <div class="gallery-end-section">
+        <h2 class="section-title">Featured Collections</h2>
+        <div class="thumbnail-grid">
+            <div class="thumbnail-item">
+                <img src="./images/riya1.png" alt="Architecture" />
+                <div class="thumbnail-overlay">
+                    <h3>Shared Journeys</h3>
+                    <div class="category-tags">
+                        <span class="tag">Journey</span>
+                        <span class="tag">Design</span>
+                    </div>
+                </div>
+            </div>
+            <div class="thumbnail-item">
+                <img src="./images/riya1.png" alt="Nature" />
+                <div class="thumbnail-overlay">
+                    <h3> Expressions of Love</h3>
+                    <div class="category-tags">
+                        <span class="tag">Nature</span>
+                        <span class="tag">Love</span>
+                    </div>
+                </div>
+            </div>
+            <div class="thumbnail-item">
+                <img src="./images/riya1.png" alt="Portraits" />
+                <div class="thumbnail-overlay">
+                    <h3>Whispered Promises</h3>
+                    <div class="category-tags">
+                        <span class="tag">People</span>
+                        <span class="tag">Promises</span>
+                    </div>
+                </div>
+            </div>
+            <div class="thumbnail-item">
+                <img src="./images/riya1.png" alt="Abstract" />
+                <div class="thumbnail-overlay">
+                    <h3>Forever Together</h3>
+                    <div class="category-tags">
+                        <span class="tag">Forever</span>
+                        <span class="tag">Modern</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- <button class="load-more">Load More</button> -->
+    </div>
+
+    <section class="comments-section">
+        <div class="comments-header">
+            <h2 class="comments-count">Comments (<span id="comment-count">0</span>)</h2>
+            <button class="btn" id="sort-button">Sort by Latest</button>
+        </div>
+
+
+        <div class="comment-form">
+            <textarea class="comment-input" id="comment-input" placeholder="Share your thoughts..."></textarea>
+            <div class="form-footer">
+                <div class="user-input">
+                    <input type="text" id="name-input" placeholder="Name" />
+                    <input type="email"  id="email-input" placeholder="Email" />
+                </div>
+                <button class="submit-comment" id="submit-comment">Post Comment</button>
+            </div>
+        </div>
+
+        <div class="comments-list" id="comments-list">
+            <!-- Comments will be dynamically inserted here -->
+        </div>
+    </section>
+
+    <script>
+       // Comment system with localStorage persistence and real-time updates
+        class CommentSystem {
+            constructor() {
+                this.comments = [];
+                this.sortByLatest = true;
+                this.STORAGE_KEY = 'comment_system_data';
+                this.initialize();
+            }
+
+            initialize() {
+                this.loadFromStorage();
+                this.renderComments();
+                this.attachEventListeners();
+                this.setupAutoSave();
+                this.startTimeUpdateInterval();
+            }
+
+            // Storage Methods
+            loadFromStorage() {
+                try {
+                    const stored = localStorage.getItem(this.STORAGE_KEY);
+                    if (stored) {
+                        const parsedData = JSON.parse(stored);
+                        this.comments = parsedData.comments.map(comment => ({
+                            ...comment,
+                            timestamp: new Date(comment.timestamp),
+                            replies: comment.replies.map(reply => ({
+                                ...reply,
+                                timestamp: new Date(reply.timestamp)
+                            }))
+                        }));
+                        this.sortByLatest = parsedData.sortByLatest;
+                    } else {
+                        // Initialize with default comments if no stored data
+                        this.comments = [
+                            {
+                                id: 1,
+                                author: "John Doe",
+                                avatar: "JD",
+                                text: "Absolutely stunning collection! The composition and lighting in these photographs are exceptional.",
+                                timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
+                                likes: 12,
+                                replies: []
+                            }
+                        ];
+                    }
+                } catch (error) {
+                    console.error('Error loading comments:', error);
+                    this.comments = [];
+                }
+            }
+
+            saveToStorage() {
+                try {
+                    localStorage.setItem(this.STORAGE_KEY, JSON.stringify({
+                        comments: this.comments,
+                        sortByLatest: this.sortByLatest
+                    }));
+                } catch (error) {
+                    console.error('Error saving comments:', error);
+                }
+            }
+
+            // Comment Management Methods
+            addComment(text, author, email) {
+                const newComment = {
+                    id: Date.now(),
+                    author: author,
+                    avatar: this.generateAvatar(author),
+                    text: this.sanitizeInput(text),
+                    timestamp: new Date(),
+                    likes: 0,
+                    replies: [],
+                    email: email // Store email but don't display it
+                };
+
+                this.comments.unshift(newComment);
+                this.saveAndUpdate();
+                this.emit('commentAdded', newComment);
+            }
+
+            addReply(parentId, text, author, email) {
+                const reply = {
+                    id: Date.now(),
+                    author: author,
+                    avatar: this.generateAvatar(author),
+                    text: this.sanitizeInput(text),
+                    timestamp: new Date(),
+                    likes: 0,
+                    email: email
+                };
+
+                const parentComment = this.comments.find(c => c.id === parentId);
+                if (parentComment) {
+                    parentComment.replies.push(reply);
+                    this.saveAndUpdate();
+                    this.emit('replyAdded', { parentId, reply });
+                }
+            }
+
+            deleteComment(commentId, isReply = false) {
+                    if (isReply) {
+                        // Find the parent comment and remove the reply
+                        this.comments.forEach(comment => {
+                            comment.replies = comment.replies.filter(reply => reply.id !== commentId);
+                        });
+                    } else {
+                        // Remove the main comment and all its replies
+                        this.comments = this.comments.filter(comment => comment.id !== commentId);
+                    }
+
+                    this.saveAndUpdate();
+            }
+
+            updateLikes(commentId, isReply = false) {
+                let target;
+                if (isReply) {
+                    this.comments.forEach(comment => {
+                        const reply = comment.replies.find(r => r.id === commentId);
+                        if (reply) {
+                            reply.likes += 1;
+                            target = reply;
+                        }
+                    });
+                } else {
+                    target = this.comments.find(c => c.id === commentId);
+                    if (target) target.likes += 1;
+                }
+
+                if (target) {
+                    this.saveAndUpdate();
+                    this.emit('likesUpdated', { id: commentId, likes: target.likes });
+                }
+            }
+
+            // Utility Methods
+            sanitizeInput(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            generateAvatar(name) {
+                return name.split(' ').map(n => n[0]).join('').toUpperCase();
+            }
+
+            formatTimeAgo(date) {
+                const seconds = Math.floor((new Date() - date) / 1000);
+                const intervals = {
+                    year: 31536000,
+                    month: 2592000,
+                    day: 86400,
+                    hour: 3600,
+                    minute: 60
+                };
+
+                for (const [unit, secondsInUnit] of Object.entries(intervals)) {
+                    const interval = Math.floor(seconds / secondsInUnit);
+                    if (interval > 1) return `${interval} ${unit}s ago`;
+                    if (interval === 1) return `a ${unit} ago`;
+                }
+
+                return 'just now';
+            }
+
+            // Rendering Methods
+            createCommentHTML(comment, isReply = false) {
+                const repliesHTML = comment.replies ? comment.replies.map(reply => 
+                    this.createCommentHTML(reply, true)
+                ).join('') : '';
+
+                return `
+                    <div class="comment" data-id="${comment.id}">
+                        <div class="comment-avatar">${comment.avatar}</div>
+                        <div class="comment-content">
+                            <div class="comment-header">
+                                <span class="comment-author">${comment.author}</span>
+                                <span class="comment-date">${this.formatTimeAgo(comment.timestamp)}</span>
+                            </div>
+                            <p class="comment-text">${comment.text}</p>
+                            <div class="comment-actions">
+                                ${!isReply ? '<button class="action-button reply-button">Reply</button>' : ''}
+                                <button class="action-button like-button" data-likes="${comment.likes}">
+                                    Like • ${comment.likes}
+                                </button>
+                                <button class="action-button delete-button">Delete</button>
+                            </div>
+                            ${!isReply ? this.createReplyFormHTML() : ''}
+                            ${!isReply ? `<div class="comment-replies">${repliesHTML}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+
+            createReplyFormHTML() {
+                return `
+                    <div class="reply-form">
+                        <textarea class="comment-input" placeholder="Write a reply..."></textarea>
+                        <div class="form-footer">
+                            <div class="user-input">
+                                <input type="text" placeholder="Name" />
+                                <input type="email" placeholder="Email" />
+                            </div>
+                            <button class="btn submit-reply">Post Reply</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderComments() {
+                const sortedComments = [...this.comments].sort((a, b) => 
+                    this.sortByLatest ? b.timestamp - a.timestamp : a.timestamp - b.timestamp
+                );
+                
+                document.getElementById('comments-list').innerHTML = 
+                    sortedComments.map(comment => this.createCommentHTML(comment)).join('');
+                
+                document.getElementById('comment-count').textContent = this.comments.length;
+                
+                this.attachEventListeners();
+            }
+
+            // Event Handling
+            attachEventListeners() {
+                // Like buttons
+                document.querySelectorAll('.like-button').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const comment = e.target.closest('.comment');
+                        const isReply = comment.parentElement.classList.contains('comment-replies');
+                        this.updateLikes(parseInt(comment.dataset.id), isReply);
+                    });
+                });
+
+                // Reply buttons
+                document.querySelectorAll('.reply-button').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const replyForm = e.target.closest('.comment-content').querySelector('.reply-form');
+                        replyForm.classList.toggle('active');
+                    });
+                });
+
+                // Delete buttons
+                document.querySelectorAll('.delete-button').forEach(button => {
+                        button.addEventListener('click', (e) => {
+                            const comment = e.target.closest('.comment');
+                            const isReply = comment.parentElement.classList.contains('comment-replies');
+                            this.deleteComment(parseInt(comment.dataset.id), isReply);
+                    });
+                });
+
+                // Submit reply buttons
+                document.querySelectorAll('.submit-reply').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const replyForm = e.target.closest('.reply-form');
+                        const text = replyForm.querySelector('textarea').value;
+                        const name = replyForm.querySelector('input[type="text"]').value;
+                        const email = replyForm.querySelector('input[type="email"]').value;
+                        const parentId = parseInt(e.target.closest('.comment').dataset.id);
+
+                        if (text && name && email) {
+                            this.addReply(parentId, text, name, email);
+                            replyForm.classList.remove('active');
+                            replyForm.querySelector('textarea').value = '';
+                            replyForm.querySelector('input[type="text"]').value = '';
+                            replyForm.querySelector('input[type="email"]').value = '';
+                        }
+                    });
+                });
+            }
+
+            // Event emission for real-time updates
+            emit(eventName, data) {
+                const event = new CustomEvent(eventName, { detail: data });
+                document.dispatchEvent(event);
+            }
+
+            // Utility methods for updates and maintenance
+            saveAndUpdate() {
+                this.saveToStorage();
+                this.renderComments();
+            }
+
+            setupAutoSave() {
+                // Auto-save every 30 seconds
+                setInterval(() => this.saveToStorage(), 30000);
+            }
+
+            startTimeUpdateInterval() {
+                // Update timestamps every minute
+                setInterval(() => {
+                    document.querySelectorAll('.comment-date').forEach(date => {
+                        const commentId = date.closest('.comment').dataset.id;
+                        const comment = this.comments.find(c => c.id === parseInt(commentId));
+                        if (comment) {
+                            date.textContent = this.formatTimeAgo(comment.timestamp);
+                        }
+                    });
+                }, 60000);
+            }
+        }
+
+        // Initialize the comment system
+        document.addEventListener('DOMContentLoaded', () => {
+            const commentSystem = new CommentSystem();
+
+            // Sort button handler
+            document.getElementById('sort-button').addEventListener('click', () => {
+                commentSystem.sortByLatest = !commentSystem.sortByLatest;
+                document.getElementById('sort-button').textContent = 
+                    `Sort by ${commentSystem.sortByLatest ? 'Oldest' : 'Latest'}`;
+                commentSystem.renderComments();
+            });
+
+            // Submit comment handler
+            document.getElementById('submit-comment').addEventListener('click', () => {
+                const text = document.getElementById('comment-input').value;
+                const name = document.getElementById('name-input').value;
+                const email = document.getElementById('email-input').value;
+
+                if (text && name && email) {
+                    commentSystem.addComment(text, name, email);
+                    document.getElementById('comment-input').value = '';
+                    document.getElementById('name-input').value = '';
+                    document.getElementById('email-input').value = '';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

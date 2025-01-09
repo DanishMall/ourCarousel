@@ -24,10 +24,10 @@
                 <img src="./images/us3.png" alt="Premium photo 2" />
                 <img src="./images/us7.png" alt="Premium photo 3" />
                 <img src="./images/us8.png" alt="Premium photo 4" />
-                <img src="./images/us8.png" alt="Premium photo 5" />
-                <img src="./images/us3.png" alt="Premium photo 6" />
-                <img src="./images/us7.png" alt="Premium photo 7" />
-                <img src="./images/us8.png" alt="Premium photo 8" />
+                <img src="./images/forever.png" alt="Premium photo 5" />
+                <img src="./images/riya2.png" alt="Premium photo 6" />
+                <img src="./images/food.png" alt="Premium photo 7" />
+                <img src="./images/riya3.png" alt="Premium photo 8" />
             </div>
             <!-- <div class="navigation-arrows">
                 <div class="arrow prev"></div>
@@ -51,7 +51,7 @@
         <h2 class="section-title">Featured Collections</h2>
         <div class="thumbnail-grid">
             <div class="thumbnail-item">
-                <img src="./images/riya1.png" alt="Architecture" />
+                <img src="./images/journey.png" alt="Architecture" />
                 <div class="thumbnail-overlay">
                     <h3>Shared Journeys</h3>
                     <div class="category-tags">
@@ -61,7 +61,7 @@
                 </div>
             </div>
             <div class="thumbnail-item">
-                <img src="./images/riya1.png" alt="Nature" />
+                <img src="./images/love.png" alt="Nature" />
                 <div class="thumbnail-overlay">
                     <h3> Expressions of Love</h3>
                     <div class="category-tags">
@@ -71,7 +71,7 @@
                 </div>
             </div>
             <div class="thumbnail-item">
-                <img src="./images/riya1.png" alt="Portraits" />
+                <img src="./images/promises_ring.png" alt="Portraits" />
                 <div class="thumbnail-overlay">
                     <h3>Whispered Promises</h3>
                     <div class="category-tags">
@@ -81,7 +81,7 @@
                 </div>
             </div>
             <div class="thumbnail-item">
-                <img src="./images/riya1.png" alt="Abstract" />
+                <img src="./images/forever.png" alt="Abstract" />
                 <div class="thumbnail-overlay">
                     <h3>Forever Together</h3>
                     <div class="category-tags">
@@ -446,5 +446,58 @@
             });
         });
     </script>
+
+    <!-- <script>
+        let items = [
+            { id: 1, title: "Shared Journeys", views: 856, image: "/api/placeholder/400/300", tags: ["Journey", "Design"] },
+            { id: 2, title: "Expressions of Love", views: 1240, image: "/api/placeholder/400/300", tags: ["Nature", "Love"] },
+            { id: 3, title: "Whispered Promises", views: 2100, image: "/api/placeholder/400/300", tags: ["People", "Promises"] },
+            { id: 4, title: "Forever Together", views: 950, image: "/api/placeholder/400/300", tags: ["Forever", "Modern"] }
+        ];
+
+        function renderGallery() {
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = items.map(item => `
+                <div class="gallery-item">
+                    <img src="${item.image}" alt="${item.title}" class="gallery-image">
+                    <div class="view-count">👁️ ${item.views}</div>
+                    <div class="content">
+                        <h3>${item.title}</h3>
+                        <div class="tags">
+                            ${item.tags.map(tag => `
+                                <span class="tag">${tag}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showNotification(milestone) {
+            const notification = document.getElementById('notification');
+            const milestoneText = document.getElementById('milestone-text');
+            milestoneText.textContent = `Image reached ${milestone} views`;
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        setInterval(() => {
+            items = items.map(item => {
+                const newViews = item.views + Math.floor(Math.random() * 10) + 1;
+                const milestone = Math.floor(newViews / 1000) * 1000;
+                
+                if (milestone > 0 && newViews >= milestone && item.views < milestone) {
+                    showNotification(milestone);
+                }
+                
+                return { ...item, views: newViews };
+            });
+            renderGallery();
+        }, 2000);
+
+        renderGallery();
+    </script> -->
 </body>
 </html>
